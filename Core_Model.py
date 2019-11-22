@@ -252,10 +252,12 @@ def core_model(case_dic, tech_list):
                 decay_rate = tech_dic['decay_rate']
             else:
                 decay_rate = 0
+                print('Warning: No decay rate specified for ', tech_name,'. We assume a decay rate of 0.', sep = '')
             if 'efficiency' in tech_dic:
                 efficiency = tech_dic['efficiency']
             else:
                 efficiency = 1.0
+                print('Warning: No efficiency specified for ', tech_name,'. We assume an efficiency of 1.', sep = '')
                 
             for i in range(num_time_periods):
 
@@ -301,6 +303,7 @@ def core_model(case_dic, tech_list):
                 efficiency = tech_dic['efficiency']
             else:
                 efficiency = 1.0
+                print('Warning: No efficiency specified for ', tech_name,'. We assume an efficiency of 1.', sep = '')
 
             node_balance[node_to] += dispatch
             node_balance[node_from] += - dispatch/efficiency # need more in than out            
@@ -337,6 +340,7 @@ def core_model(case_dic, tech_list):
                 efficiency = tech_dic['efficiency']
             else:
                 efficiency = 1.0
+                print('Warning: No efficiency specified for ', tech_name,'. We assume an efficiency of 1.', sep = '')
 
             node_balance[node_to] += dispatch
             node_balance[node_from] += - dispatch/efficiency # need more in than out            
