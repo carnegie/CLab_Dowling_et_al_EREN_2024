@@ -43,7 +43,7 @@ def preprocess_input(case_input_path_filename):
     keywords_int = ['year_start','month_start','day_start','hour_start',
                     'year_end','month_end','day_end','hour_end']
     
-    keywords_real = ['numerics_scaling','fixed_cost','var_cost','charging_time'
+    keywords_real = ['numerics_scaling','fixed_cost','var_cost','charging_time',
                      'efficiency','decay_rate']
             
     tech_keywords = {}
