@@ -25,7 +25,7 @@ import pandas as pd
        
 #%%
 # save scalar results for all cases
-def save_basic_results(case_dic, tech_list, constraints,prob_dic,capacity_dic,dispatch_dic):
+def save_basic_results(case_dic, tech_list, constraints,prob_dic,capacity_dic,dispatch_dic,stored_dic):
     
     """
     There is direct input, and results
@@ -62,6 +62,8 @@ def save_basic_results(case_dic, tech_list, constraints,prob_dic,capacity_dic,di
             results_tech_dic[tech_name + ' capacity'] = capacity_dic[tech_name]
         if tech_name in dispatch_dic:
             results_tech_dic[tech_name + ' dispatch'] = np.average(dispatch_dic[tech_name])
+        if tech_name in stored_dic:
+            results_tech_dic[tech_name + ' stored'] = np.average(stored_dic[tech_name])
         
             
   
@@ -85,6 +87,8 @@ def save_basic_results(case_dic, tech_list, constraints,prob_dic,capacity_dic,di
         results_time_dic[node+' price'] = node_price_dic[node]
     for item in dispatch_dic:
         results_time_dic[item] = dispatch_dic[item]
+    for item in stored_dic:
+        results_time_dic[item] = stored_dic[item]
         
     
 
@@ -104,7 +108,7 @@ def save_basic_results(case_dic, tech_list, constraints,prob_dic,capacity_dic,di
     todayString = str(today.year) + str(today.month).zfill(2) + str(today.day).zfill(2) + '-' + \
         str(today.hour).zfill(2) + str(today.minute).zfill(2) + str(today.second).zfill(2)
     
-    output_file_name = case_name +  todayString
+    output_file_name = case_name + '_'+ todayString
     output_file_path_name = output_folder + "/" + output_file_name
     
     if not os.path.exists(output_folder):
@@ -131,55 +135,7 @@ def save_basic_results(case_dic, tech_list, constraints,prob_dic,capacity_dic,di
     return [[input_case_dic,  input_tech_list,  input_time_dic],
             [results_case_dic,results_tech_dic,results_time_dic]]
 
-    
-#%%    
-    
-def temp():
-    output_path = case_dic['output_path']
-    case_name = case_dic['case_name']
-    output_folder = output_path + "/" + case_name
-    today = datetime.datetime.now()
-    todayString = str(today.year) + str(today.month).zfill(2) + str(today.day).zfill(2) + '-' + \
-        str(today.hour).zfill(2) + str(today.minute).zfill(2) + str(today.second).zfill(2)
-    
-    output_file_name = case_name + '_scalar_' + todayString
-    
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
-    
-    with contextlib.closing(open(output_folder + "/" + output_file_name + '.csv', 'w',newline='')) as output_file:
-        writer = csv.writer(output_file)
-        writer.writerows(output_scalar_array)
-        output_file.close()
-        
  
-    if verbose: 
-        print ( 'file written: ' + output_file_name + '.csv')
-        
-
-        
-    #%% output vector information
-     
-    output_path = case_dic['output_path']
-    case_name = case_dic['case_name']
-    output_folder = output_path + "/" + case_name
-    today = datetime.datetime.now()
-    todayString = str(today.year) + str(today.month).zfill(2) + str(today.day).zfill(2) + '-' + \
-        str(today.hour).zfill(2) + str(today.minute).zfill(2) + str(today.second).zfill(2)
-    
-    output_file_name = case_name + '_vector_' + todayString
-    
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
-    
-    with contextlib.closing(open(output_folder + "/" + output_file_name + '.csv', 'w',newline='')) as output_file:
-        writer = csv.writer(output_file)
-        writer.writerows(output_vector_array)
-        output_file.close()
-        
-    if verbose: 
-        print ( 'file written: ' + output_file_name + '.csv')
-
 #%%
 # flatten dictionary of dictionaries to dictionary (1 level)
 def flatten_dic(dic_in):

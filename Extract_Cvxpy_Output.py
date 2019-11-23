@@ -21,7 +21,7 @@ import numpy as np
 # save scalar results for all cases
 def extract_cvxpy_output(case_dic,tech_list,constraint_list, 
                         cvxpy_constraints,cvxpy_prob,
-                        cvxpy_capacity_dic,cvxpy_dispatch_dic):
+                        cvxpy_capacity_dic,cvxpy_dispatch_dic,cvxpy_stored_dic):
         
     # conert everything to numpy arrays
     numerics_scaling = case_dic['numerics_scaling']
@@ -34,6 +34,8 @@ def extract_cvxpy_output(case_dic,tech_list,constraint_list,
     
     capacity_dic = {}
     dispatch_dic = {}
+    stored_dic = {}
+
 
     for item in cvxpy_capacity_dic:
         val = cvxpy_capacity_dic[item]
@@ -44,6 +46,11 @@ def extract_cvxpy_output(case_dic,tech_list,constraint_list,
         val = cvxpy_dispatch_dic[item]
         if type(val) ==  cvxpy.expressions.variable.Variable:
             dispatch_dic[item+' dispatch'] = cvxpy_dispatch_dic[item].value
+       
+    for item in cvxpy_stored_dic:
+        val = cvxpy_stored_dic[item]
+        if type(val) ==  cvxpy.expressions.variable.Variable:
+            stored_dic[item+' stored'] = cvxpy_stored_dic[item].value
     
     prob = {}
     prob['status'] = cvxpy_prob.status
@@ -57,4 +64,4 @@ def extract_cvxpy_output(case_dic,tech_list,constraint_list,
         node_price[node] = -cvxpy_prob.constraints[idx].dual_value / numerics_scaling
     prob['node_price'] = node_price
     
-    return prob,capacity_dic,dispatch_dic
+    return prob,capacity_dic,dispatch_dic,stored_dic

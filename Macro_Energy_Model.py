@@ -59,15 +59,15 @@ except:
 
 print ('Macro_Energy_Model: Executing core model')
 #global_results_dic, decision_dic_list = core_model (case_dic, tech_list)
-constraint_list,cvxpy_constraints,cvxpy_prob,cvxpy_capacity_dic,cvxpy_dispatch_dic    = core_model (case_dic, tech_list)
+constraint_list,cvxpy_constraints,cvxpy_prob,cvxpy_capacity_dic,cvxpy_dispatch_dic,cvxpy_stored_dic    = core_model (case_dic, tech_list)
 
 # constraints,prob,capacity_dic,dispatch_dic = extract_cvxpy_output(cvxpy_constraints,cvxpy_prob,cvxpy_capacity_dic,cvxpy_dispatch_dic )
-prob_dic,capacity_dic,dispatch_dic = extract_cvxpy_output(case_dic,tech_list,constraint_list,
-                cvxpy_constraints,cvxpy_prob,cvxpy_capacity_dic,cvxpy_dispatch_dic )
+prob_dic,capacity_dic,dispatch_dic,stored_dic = extract_cvxpy_output(case_dic,tech_list,constraint_list,
+                cvxpy_constraints,cvxpy_prob,cvxpy_capacity_dic,cvxpy_dispatch_dic,cvxpy_stored_dic )
 
 print ('Simple_Energy_Model: Saving basic results')
 # Note that results for individual cases are output from core_model_loop
 [[input_case_dic,  input_tech_list,  input_time_dic],
-   [results_case_dic,results_tech_dic,results_time_dic]] = save_basic_results(case_dic, tech_list, cvxpy_constraints,prob_dic,capacity_dic,dispatch_dic)
+   [results_case_dic,results_tech_dic,results_time_dic]] = save_basic_results(case_dic, tech_list, cvxpy_constraints,prob_dic,capacity_dic,dispatch_dic,stored_dic)
 
  

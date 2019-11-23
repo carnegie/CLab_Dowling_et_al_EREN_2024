@@ -97,6 +97,7 @@ def core_model(case_dic, tech_list):
     # NOTE: node_names = node_balance.keys()     after this code runs.
     capacity_dic = {} # dictionary of capacity decision variables
     dispatch_dic = {} # dictionary of dispatch decision variables for inflow to tech
+    stored_dic = {} # dictionary of storage amounts
     
     num_time_periods = case_dic['num_time_periods']
                   
@@ -272,6 +273,7 @@ def core_model(case_dic, tech_list):
             capacity_dic[tech_name] = capacity
             dispatch_dic[tech_name] = dispatch
             dispatch_dic[tech_name+' in'] = dispatch_in
+            stored_dic[tech_name] = energy_stored
             
             node_balance[node_to] += dispatch
             if 'node_from' in tech_dic:
@@ -419,7 +421,7 @@ def core_model(case_dic, tech_list):
         print ('    elapsed time = ',end_time - start_time)
 
             
-    return constraint_list,constraints,prob,capacity_dic,dispatch_dic    
+    return constraint_list,constraints,prob,capacity_dic,dispatch_dic,stored_dic    
     
     
     
