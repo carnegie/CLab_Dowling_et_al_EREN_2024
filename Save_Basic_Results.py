@@ -112,7 +112,7 @@ def save_basic_results(case_dic, tech_list, constraints,prob_dic,capacity_dic,di
         
     with open(output_file_path_name + '.pickle', 'wb') as f:
         pickle.dump([[input_case_dic,  input_tech_list,  input_time_dic],
-                     [results_case_dic,results_tech_dic,results_time_dic]], f)
+                     [results_case_dic,results_tech_dic,results_time_dic]], f, protocol=pickle.HIGHEST_PROTOCOL)
     if verbose: 
         print ( 'pickle file written: ' + output_file_path_name + '.pickle' )
     
@@ -214,23 +214,8 @@ def robust_dic(dic, key):
     return res
 
 
-#%%
-def pickle_raw_results( case_dic, result_dic ):
-    
-    output_path = case_dic['OUTPUT_PATH']
-    case_name = case_dic['case_name']
-    
-    output_folder = output_path + '/' + case_name
-    
-    output_file_name = case_name + '-' + case_name + '.pickle'
-    
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
-        
-    with open(output_folder + "/" + output_file_name, 'wb') as db:
-        pickle.dump([case_dic,result_dic], db, protocol=pickle.HIGHEST_PROTOCOL)
 
-#%%
+#%%  NOTE THAT THIS STILL DOESN'T WORK BECAUSE OF TIME STAMP
 def read_pickle_raw_results( case_dic ):
     
     output_path = case_dic['OUTPUT_PATH']
@@ -241,172 +226,8 @@ def read_pickle_raw_results( case_dic ):
     output_file_name = case_name + '-' + case_name + '.pickle'
     
     with open(output_folder + "/" + output_file_name, 'rb') as db:
-        [case_dic,case_dic,result_dic] = pickle.load( db )
+        [[input_case_dic,  input_tech_list,  input_time_dic],
+            [results_case_dic,results_tech_dic,results_time_dic]] = pickle.load( db )
     
     return result_dic
 
-#%%
-def pickle_raw_results_list( case_dic, case_dic_list, result_dic_list ):
-    
-    output_path = case_dic['OUTPUT_PATH']
-    case_name = case_dic['case_name']
-    output_folder = output_path + '/' + case_name
-    output_file_name = case_name + '.pickle'
-    
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
-        
-    with open(output_folder + "/" + output_file_name, 'wb') as db:
-        pickle.dump([case_dic,case_dic_list,result_dic_list], db, protocol=pickle.HIGHEST_PROTOCOL)
-
-#%%
-def merge_two_dicts(x, y):
-    z = x.copy()   # start with x's keys and values
-    z.update(y)    # modifies z with y's keys and values & returns None
-    return z
-
-#%%
-# save results by case
-def save_list_of_vector_results_as_csv( case_dic, case_dic_list, result_dic_list ):
-    
-    for idx in range(len(result_dic_list)):
-        
-        case_dic = case_dic_list[idx]
-        result_dic = result_dic_list[idx]
-        save_vector_results_as_csv( case_dic, case_dic, result_dic )
-        
-
-#%%
-# save results by case
-def save_vector_results_as_csv( case_dic,  result_dic ):
-    
-    output_path = case_dic['OUTPUT_PATH']
-    case_name = case_dic['case_name']
-    output_folder = output_path + '/' + case_name
-
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
-             
-    if len(case_dic['WIND_SERIES']) == 0:
-        case_dic['WIND_SERIES'] = ( 0.*np.array(case_dic['DEMAND_SERIES'])).tolist()
-    if len(case_dic['SOLAR_SERIES']) == 0:
-        case_dic['SOLAR_SERIES'] = ( 0.*np.array(case_dic['DEMAND_SERIES'])).tolist()
-             
-    if len(case_dic['WIND2_SERIES']) == 0:
-        case_dic['WIND2_SERIES'] = ( 0.*np.array(case_dic['DEMAND_SERIES'])).tolist()
-    if len(case_dic['SOLAR2_SERIES']) == 0:
-        case_dic['SOLAR2_SERIES'] = ( 0.*np.array(case_dic['DEMAND_SERIES'])).tolist()
-    
-    if len(case_dic['CSP_SERIES']) == 0:
-        case_dic['CSP_SERIES'] = ( 0.*np.array(case_dic['DEMAND_SERIES'])).tolist()
-    
-    header_list = []
-    vector_values_list = []
-    
-    header_list += ['time (hr)']
-    vector_values_list.append( np.arange(len(case_dic['DEMAND_SERIES'])))
-    
-    header_list += ['demand (kW)']
-    vector_values_list.append( case_dic['DEMAND_SERIES'] )
-    
-    header_list += ['solar capacity factor (-)']
-    vector_values_list.append( np.array(case_dic['SOLAR_SERIES']))    
-    
-    header_list += ['wind capacity factor (-)']
-    vector_values_list.append( np.array(case_dic['WIND_SERIES']))
-
-    header_list += ['solar2 capacity factor (-)']
-    vector_values_list.append( np.array(case_dic['SOLAR2_SERIES']))    
-    
-    header_list += ['wind2 capacity factor (-)']
-    vector_values_list.append( np.array(case_dic['WIND2_SERIES']))
-
-    header_list += ['dispatch natgas (kW)']
-    vector_values_list.append( result_dic['DISPATCH_NATGAS'].flatten() )
-    
-    header_list += ['dispatch natgas ccs (kW)']
-    vector_values_list.append( result_dic['DISPATCH_NATGAS_CCS'].flatten() )
-    
-    header_list += ['dispatch solar (kW)']
-    vector_values_list.append( result_dic['DISPATCH_SOLAR'].flatten() ) 
-    
-    header_list += ['dispatch wind (kW)']
-    vector_values_list.append( result_dic['DISPATCH_WIND'].flatten() )
-    
-    header_list += ['dispatch solar2 (kW)']
-    vector_values_list.append( result_dic['DISPATCH_SOLAR2'].flatten() ) 
-    
-    header_list += ['dispatch wind2 (kW)']
-    vector_values_list.append( result_dic['DISPATCH_WIND2'].flatten() )
-    
-    header_list += ['dispatch nuclear (kW)']
-    vector_values_list.append( result_dic['DISPATCH_NUCLEAR'].flatten() )
-    
-    header_list += ['dispatch to storage (kW)']
-    vector_values_list.append( result_dic['DISPATCH_TO_STORAGE'].flatten() )
-    
-    header_list += ['dispatch from storage (kW)']
-    vector_values_list.append( result_dic['DISPATCH_FROM_STORAGE'].flatten() )  # THere is no FROM in dispatch results
-
-    header_list += ['energy storage (kWh)']
-    vector_values_list.append( result_dic['ENERGY_STORAGE'].flatten() )
-    
-    header_list += ['dispatch to storage2 (kW)']
-    vector_values_list.append( result_dic['DISPATCH_TO_STORAGE2'].flatten() )
-    
-    header_list += ['dispatch from storage2 (kW)']
-    vector_values_list.append( result_dic['DISPATCH_FROM_STORAGE2'].flatten() )  # THere is no FROM in dispatch results
-
-    header_list += ['energy storage2 (kWh)']
-    vector_values_list.append( result_dic['ENERGY_STORAGE2'].flatten() )
-    
-    header_list += ['dispatch to pgp storage (kW)']
-    vector_values_list.append( result_dic['DISPATCH_TO_PGP_STORAGE'].flatten() )
-    
-    header_list += ['dispatch pgp storage (kW)']
-    vector_values_list.append( result_dic['DISPATCH_FROM_PGP_STORAGE'].flatten() )
-
-    header_list += ['energy pgp storage (kWh)']
-    vector_values_list.append( result_dic['ENERGY_PGP_STORAGE'].flatten() )
-    
-    header_list += ['dispatch to csp storage (kW)']
-    vector_values_list.append( result_dic['DISPATCH_TO_CSP_STORAGE'].flatten() )  # THere is no FROM in dispatch results
-    
-    header_list += ['dispatch from csp storage (kW)']
-    vector_values_list.append( result_dic['DISPATCH_FROM_CSP'].flatten() )  # THere is no FROM in dispatch results
-
-    header_list += ['energy csp storage (kWh)']
-    vector_values_list.append( result_dic['ENERGY_CSP_STORAGE'].flatten() )
-    
-    header_list += ['dispatch unmet demand (kW)']
-    vector_values_list.append( result_dic['DISPATCH_UNMET_DEMAND'].flatten() )
-    
-    header_list += ['cutailment solar (kW)']
-    vector_values_list.append( result_dic['CURTAILMENT_SOLAR'].flatten() )
-    
-    header_list += ['cutailment wind (kW)']
-    vector_values_list.append( result_dic['CURTAILMENT_WIND'].flatten() )
-    
-    header_list += ['cutailment solar2 (kW)']
-    vector_values_list.append( result_dic['CURTAILMENT_SOLAR2'].flatten() )
-    
-    header_list += ['cutailment wind2 (kW)']
-    vector_values_list.append( result_dic['CURTAILMENT_WIND2'].flatten() )
-    
-    header_list += ['cutailment csp (kW)']
-    vector_values_list.append( result_dic['CURTAILMENT_CSP'].flatten() )
-    
-    header_list += ['cutailment nuclear (kW)']
-    vector_values_list.append( result_dic['CURTAILMENT_NUCLEAR'].flatten() )
-    
-    header_list += ['price ($/kWh)']
-    vector_values_list.append( result_dic['PRICE'].flatten() )
-     
-    output_file_name = case_dic['case_name']+'-'+case_dic['CASE_NAME']
-    
-    with contextlib.closing(open(output_folder + "/" + output_file_name + '.csv', 'w',newline='')) as output_file:
-        writer = csv.writer(output_file)
-        writer.writerow(header_list)
-        writer.writerows((np.asarray(vector_values_list)).transpose())
-        output_file.close()
- 
