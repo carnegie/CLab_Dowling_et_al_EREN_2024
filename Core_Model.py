@@ -85,7 +85,8 @@ approaches.
 def core_model(case_dic, tech_list):
 
     start_time = datetime.datetime.now()    # timer starts
-    if case_dic['verbose']:
+    verbose = case_dic['verbose']
+    if verbose:
         print ('    start time = ',start_time)
 
     # Initialize variables to be used later
@@ -303,7 +304,8 @@ def core_model(case_dic, tech_list):
                 efficiency = tech_dic['efficiency']
             else:
                 efficiency = 1.0
-                print('Warning: No efficiency specified for ', tech_name,'. We assume an efficiency of 1.', sep = '')
+                if verbose:
+                    print('Warning: No efficiency specified for ', tech_name,'. We assume an efficiency of 1.', sep = '')
 
             node_balance[node_to] += dispatch
             node_balance[node_from] += - dispatch/efficiency # need more in than out            
@@ -340,7 +342,8 @@ def core_model(case_dic, tech_list):
                 efficiency = tech_dic['efficiency']
             else:
                 efficiency = 1.0
-                print('Warning: No efficiency specified for ', tech_name,'. We assume an efficiency of 1.', sep = '')
+                if verbose:
+                    print('Warning: No efficiency specified for ', tech_name,'. We assume an efficiency of 1.', sep = '')
 
             node_balance[node_to] += dispatch
             node_balance[node_from] += - dispatch/efficiency # need more in than out            
@@ -411,7 +414,7 @@ def core_model(case_dic, tech_list):
 #    
     
     end_time = datetime.datetime.now()    # timer starts
-    if case_dic['verbose']:
+    if verbose:
         print ('    end time = ',end_time)
         print ('    elapsed time = ',end_time - start_time)
 

@@ -28,64 +28,74 @@ import pandas as pd
 def save_basic_results(case_dic, tech_list, constraints,prob_dic,capacity_dic,dispatch_dic):
     
     """
-    Save scalar information to csv/excel file, one column per technology, one field per row
-    -- Begin with case dependent information duplicated for each row.
-    -- Include values from tech_list where values are scalars, take means where values are vectors
-    -- Include values from capacity_dic, dispatch_dic, and prob, taking means where values are vectors.
+    There is direct input, and results
+    This can be per case, per technology, or per time step.
     
-    Save vector information to csv/excel file, one column per field, one row per time step.
-    -- question regarding how best to format headers.
+    This suggests a 9 item array:
+        [input, results]  X [by_case, by_tech, by_timestep]
     
     """
+    verbose = case_dic['verbose']  
+
+    input_case_dic = case_dic  # one scalar item per element per case
+    input_tech_list = copy.deepcopy( tech_list )
+    for tech_dic in input_tech_list: # get rid of series in tech list
+        if 'series' in tech_dic:
+            del tech_dic['series']
     
     #--------------------------------------------------------------------------
     
-    # generate scalar outputs per case
-    case_output_dic = {} # one scalar item per element per case
-    
-    for key in case_dic:
-        case_output_dic[key] = case_dic[key]
-        
+    results_case_dic = {}        
     temp_dic = flatten_dic(meanify(prob_dic))
     for key in temp_dic:
-        case_output_dic[key] = temp_dic[key]
+        results_case_dic[key] = temp_dic[key]
    
     #--------------------------------------------------------------------------
     
-    tech_output_dic_list = list(map(meanify,tech_list))
+    results_tech_dic = {}
     
-    for i in range(len(tech_output_dic_list)):
-        dic_sub = tech_output_dic_list[i]
-        tech_name = dic_sub['tech_name']
-        if 'series' in dic_sub:
-            dic_sub[tech_name + ' series'] = np.average(dic_sub['series'])
-        if dic_sub['tech_name'] in capacity_dic:
-            dic_sub[tech_name + ' capacity'] = capacity_dic[dic_sub['tech_name']]
-        if dic_sub['tech_name'] in dispatch_dic:
-            dic_sub[tech_name + ' dispatch'] = np.average(dispatch_dic[dic_sub['tech_name']])
-        tech_output_dic_list[i] = dic_sub
+    for tech_dic in tech_list:
+        tech_name = tech_dic['tech_name']
+        if 'series' in tech_dic:
+            results_tech_dic[tech_name + ' series'] = np.average(tech_dic['series'])
+        if tech_name in capacity_dic:
+            results_tech_dic[tech_name + ' capacity'] = capacity_dic[tech_name]
+        if tech_name in dispatch_dic:
+            results_tech_dic[tech_name + ' dispatch'] = np.average(dispatch_dic[tech_name])
+        
             
   
     #--------------------------------------------------------------------------
-    
+    input_time_dic = {}
+    results_time_dic = {} # one time vector per keyword
+
     num_time_periods = case_dic['num_time_periods']
-    time_output_dic = {} # one time vector per keyword
-    time_output_dic['time_index'] = np.array(range(num_time_periods))
+    results_time_dic['time_index'] = np.array(range(num_time_periods))
     for item in tech_list:
         tech_name = item['tech_name']
         if 'series' in item:
-            time_output_dic[tech_name + ' series'] = item['series']
+            input_time_dic[tech_name + ' series'] = item['series']
+            if tech_name in capacity_dic:
+                factor = capacity_dic[tech_name]
+            else:
+                factor = 1.0
+            results_time_dic[tech_name + ' potential'] = item['series']*factor
     node_price_dic = prob_dic['node_price']
     for node in node_price_dic:
-        time_output_dic[node+' price'] = node_price_dic[node]
+        results_time_dic[node+' price'] = node_price_dic[node]
     for item in dispatch_dic:
-        time_output_dic[item] = dispatch_dic[item]
+        results_time_dic[item] = dispatch_dic[item]
+        
+    
 
     #--------------------------------------------------------------------------
     
-    case_df = pd.DataFrame(list(case_output_dic.items()))
-    tech_df = pd.DataFrame(tech_output_dic_list)
-    time_df = pd.DataFrame(time_output_dic)
+    input_case_df = pd.DataFrame(list(input_case_dic.items()))
+    input_tech_df = pd.DataFrame(input_tech_list)
+    input_time_df = pd.DataFrame(input_time_dic)
+    results_case_df = pd.DataFrame(list(results_case_dic.items()))
+    results_tech_df = pd.DataFrame(list(results_tech_dic.items()))
+    results_time_df = pd.DataFrame(results_time_dic)
     
     output_path = case_dic['output_path']
     case_name = case_dic['case_name']
@@ -94,23 +104,32 @@ def save_basic_results(case_dic, tech_list, constraints,prob_dic,capacity_dic,di
     todayString = str(today.year) + str(today.month).zfill(2) + str(today.day).zfill(2) + '-' + \
         str(today.hour).zfill(2) + str(today.minute).zfill(2) + str(today.second).zfill(2)
     
-    output_file_name = case_name + '_vector_' + todayString
-    output_file_path_name = output_folder + "/" + output_file_name + '.xlsx'
+    output_file_name = case_name +  todayString
+    output_file_path_name = output_folder + "/" + output_file_name
     
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
-    
-    writer = pd.ExcelWriter(output_file_path_name, engine = 'xlsxwriter')
-    case_df.to_excel(writer, sheet_name = 'case')  
-    tech_df.to_excel(writer, sheet_name = 'tech')
-    time_df.to_excel(writer, sheet_name = 'time') 
-    writer.save()
-    
-    verbose = case_dic['verbose']       
+        
+    with open(output_file_path_name + '.pickle', 'wb') as f:
+        pickle.dump([[input_case_dic,  input_tech_list,  input_time_dic],
+                     [results_case_dic,results_tech_dic,results_time_dic]], f)
     if verbose: 
-        print ( 'file written: ' + output_file_path_name )
+        print ( 'pickle file written: ' + output_file_path_name + '.pickle' )
     
-    return case_output_dic,tech_output_dic_list,time_output_dic
+    writer = pd.ExcelWriter(output_file_path_name + '.xlsx', engine = 'xlsxwriter')
+    input_case_df.to_excel(writer, sheet_name = 'case input')
+    input_tech_df.to_excel(writer, sheet_name = 'tech input')
+    input_time_df.to_excel(writer, sheet_name = 'time input')
+    results_case_df.to_excel(writer, sheet_name = 'case results')
+    results_tech_df.to_excel(writer, sheet_name = 'tech results')
+    results_time_df.to_excel(writer, sheet_name = 'time results') 
+    writer.save()
+         
+    if verbose: 
+        print ( 'Excel file written: ' + output_file_path_name + '.xlsx' )
+    
+    return [[input_case_dic,  input_tech_list,  input_time_dic],
+            [results_case_dic,results_tech_dic,results_time_dic]]
 
     
 #%%    
