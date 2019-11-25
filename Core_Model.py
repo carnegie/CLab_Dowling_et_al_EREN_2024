@@ -182,9 +182,12 @@ def core_model(case_dic, tech_list):
         #  capacity.
         
         elif tech_type == 'fixed_generator':
-            capacity = cvx.Variable(1)
-            constraints += [ capacity >= 0 ]
-            constraint_list += [tech_name + ' capacity_ge_0']
+            if tech_dic.get('capacity',-1) > 0:
+                capacity = tech_dic['capacity']
+            else:
+                capacity = cvx.Variable(1)
+                constraints += [ capacity >= 0 ]
+                constraint_list += [tech_name + ' capacity_ge_0']
             if 'series' in tech_dic:
                 dispatch = capacity * tech_dic['series']
             else:
@@ -202,10 +205,13 @@ def core_model(case_dic, tech_list):
         # is available, it will be assumed to be output per unit capacity.
         
         elif tech_type == 'generator':
-            capacity = cvx.Variable(1)
+            if tech_dic.get('capacity',-1) > 0:
+                capacity = tech_dic['capacity']
+            else:
+                capacity = cvx.Variable(1)
+                constraints += [ capacity >= 0 ]
+                constraint_list += [tech_name + ' capacity_ge_0']
             dispatch = cvx.Variable(num_time_periods) 
-            constraints += [ capacity >= 0 ]
-            constraint_list += [tech_name + ' capacity_ge_0']
             constraints += [ dispatch >= 0 ]
             constraint_list += [tech_name + ' dispatch_ge_0']
             if 'series' in tech_dic:
@@ -231,12 +237,15 @@ def core_model(case_dic, tech_list):
         # Note: Charging time and decay rate is in units of number of time steps !!!
         
         elif tech_type == 'storage':
-            capacity = cvx.Variable(1)
+            if tech_dic.get('capacity',-1) > 0:
+                capacity = tech_dic['capacity']
+            else:
+                capacity = cvx.Variable(1)
+                constraints += [ capacity >= 0 ]
+                constraint_list += [tech_name + ' capacity_ge_0']
             dispatch_in = cvx.Variable(num_time_periods) 
             dispatch = cvx.Variable(num_time_periods)
             energy_stored = cvx.Variable(num_time_periods)
-            constraints += [ capacity >= 0 ]
-            constraint_list += [tech_name + ' capacity_ge_0']
             constraints += [ dispatch_in >= 0 ]
             constraint_list += [tech_name + ' dispatch_in_ge_0']
             constraints += [ dispatch >= 0 ]
@@ -292,10 +301,13 @@ def core_model(case_dic, tech_list):
         # Assumed to be unidirectional for simplicity !!!
         
         elif tech_type == 'transfer':
-            capacity = cvx.Variable(1)
+            if tech_dic.get('capacity',-1) > 0:
+                capacity = tech_dic['capacity']
+            else:
+                capacity = cvx.Variable(1)
+                constraints += [ capacity >= 0 ]
+                constraint_list += [tech_name + ' capacity_ge_0']
             dispatch = cvx.Variable(num_time_periods)
-            constraints += [ capacity >= 0 ]
-            constraint_list += [tech_name + ' capacity_ge_0']
             constraints += [ dispatch >= 0 ]
             constraint_list += [tech_name + ' dispatch_ge_0']
             constraints += [ dispatch <= capacity ]
@@ -324,11 +336,14 @@ def core_model(case_dic, tech_list):
         # Assumed to be unidirectional for simplicity !!!
         
         elif tech_type == 'transmission':
-            capacity = cvx.Variable(1)
+            if tech_dic.get('capacity',-1) > 0:
+                capacity = tech_dic['capacity']
+            else:
+                capacity = cvx.Variable(1)
+                constraints += [ capacity >= 0 ]
+                constraint_list += [tech_name + ' capacity_ge_0']
             dispatch = cvx.Variable(num_time_periods)
             dispatch_reverse = cvx.Variable(num_time_periods)
-            constraints += [ capacity >= 0 ]
-            constraint_list += [tech_name + ' capacity_ge_0']
             constraints += [ dispatch >= 0 ]
             constraint_list += [tech_name + ' dispatch_ge_0']
             constraints += [ dispatch_reverse >= 0 ]
