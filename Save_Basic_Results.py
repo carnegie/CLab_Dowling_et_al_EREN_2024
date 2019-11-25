@@ -90,8 +90,16 @@ def save_basic_results(case_dic, tech_list, constraints,prob_dic,capacity_dic,di
     for item in stored_dic:
         results_time_dic[item] = stored_dic[item]
         
+    #--------------------------------------------------------------------------
     
+    derived_tech_dic, derived_time_dic = compute_derived_values(
+            [[input_case_dic,   input_tech_list,  input_time_dic],
+             [results_case_dic, results_tech_dic, results_time_dic]]
+            )
 
+    results_tech_dic.update(derived_tech_dic)
+    results_time_dic.update(derived_time_dic)
+    
     #--------------------------------------------------------------------------
     
     input_case_df = pd.DataFrame(list(input_case_dic.items()))
@@ -100,6 +108,8 @@ def save_basic_results(case_dic, tech_list, constraints,prob_dic,capacity_dic,di
     results_case_df = pd.DataFrame(list(results_case_dic.items()))
     results_tech_df = pd.DataFrame(list(results_tech_dic.items()))
     results_time_df = pd.DataFrame(results_time_dic)
+    
+    #--------------------------------------------------------------------------
     
     output_path = case_dic['output_path']
     case_name = case_dic['case_name']
@@ -135,7 +145,107 @@ def save_basic_results(case_dic, tech_list, constraints,prob_dic,capacity_dic,di
     return [[input_case_dic,  input_tech_list,  input_time_dic],
             [results_case_dic,results_tech_dic,results_time_dic]]
 
- 
+#%%
+#  Compute derived values. Note that this code is largely redundant with what is in Core_Model.py
+    
+def compute_derived_values(args):
+
+    [[input_case_dic,   input_tech_list,  input_time_dic],[results_case_dic, results_tech_dic, results_time_dic]] = args
+    
+
+    verbose = input_case_dic['verbose'] 
+
+    derived_tech_dic = {}
+    derived_time_dic = {}
+    
+        #loop through dics in tech_list
+    for tech_dic in input_tech_list:
+
+        tech_name = tech_dic['tech_name']
+        tech_type = tech_dic['tech_type']
+
+        #----------------------------------------------------------------------
+        # curtailable generator
+        # (n_capacity = 1 and n_dispatch = 0 and n_dispatch = 1)
+        # Assumed to be non-curtailable generator, if time series
+        # is available, it will be assumed to be output per unit capacity.
+        
+        if tech_type == 'generator':
+            if 'series' in tech_dic:
+                derived_time_dic[tech_name + ' curtailment'] = results_tech_dic[tech_name + ' capacity'] * tech_dic['series'] - results_time_dic[tech_name+' dispatch']
+            else:
+                derived_time_dic[tech_name + ' curtailment'] = results_tech_dic[tech_name + ' capacity']  - results_time_dic[tech_name+' dispatch']
+        
+        #----------------------------------------------------------------------
+        # Storage
+        # (n_capacity = 1 and n_dispatch = 1 and n_dispatch = 1)
+        # Assumed to be storage equivalent to a battery
+        # Note variable cost, if present, is applied to output only
+        # Optional variables: charging_time, efficiency, decay_rate
+        # Note: Charging time and decay rate is in units of number of time steps !!!
+        
+        elif tech_type == 'storage':
+            if 'decay_rate' in tech_dic:
+                decay_rate = tech_dic['decay_rate']
+            else:
+                decay_rate = 0
+                if verbose:
+                    print('Warning: No decay rate specified for ', tech_name,'. We assume a decay rate of 0.', sep = '')
+            if 'efficiency' in tech_dic:
+                efficiency = tech_dic['efficiency']
+            else:
+                efficiency = 1.0
+                if verbose:
+                    print('Warning: No efficiency specified for ', tech_name,'. We assume an efficiency of 1.', sep = '')
+            dispatch_in = results_time_dic[tech_name + ' in dispatch']
+            energy_stored = results_time_dic[tech_name +' stored']
+            derived_time_dic[tech_name + ' losses'] = dispatch_in * (1 - efficiency) + energy_stored * decay_rate
+
+        
+        #----------------------------------------------------------------------
+        # Transmission  or concerion (directional)
+        # (n_capacity = 1 and n_dispatch = 1)
+        # Assumed to be unidirectional for simplicity !!!
+        
+        elif tech_type == 'transfer':
+            
+            if 'efficiency' in tech_dic:
+                efficiency = tech_dic['efficiency']
+            else:
+                efficiency = 1.0
+                if verbose:
+                    print('Warning: No efficiency specified for ', tech_name,'. We assume an efficiency of 1.', sep = '')
+
+            dispatch = results_time_dic[tech_name+' dispatch']
+            derived_time_dic[tech_name+' in dispatch'] = dispatch/efficiency # need more in than out            
+            derived_time_dic[tech_name+' losses'] = dispatch*(1./efficiency - 1.) # need more in than out            
+
+        
+        #----------------------------------------------------------------------
+        # Bidirectional Transmission (directional)
+        # (n_capacity = 1 and n_dispatch = 1)
+        # Assumed to be unidirectional for simplicity !!!
+        
+        elif tech_type == 'transmission':
+                                        
+            capacity = results_tech_dic[tech_name + ' capacity']
+            dispatch = results_time_dic[tech_name + ' dispatch']
+            dispatch_reverse = results_time_dic[tech_name+' reverse dispatch'] 
+            
+            if 'efficiency' in tech_dic:
+                efficiency = tech_dic['efficiency']
+            else:
+                efficiency = 1.0
+                if verbose:
+                    print('Warning: No efficiency specified for ', tech_name,'. We assume an efficiency of 1.', sep = '')
+
+            derived_time_dic[tech_name+' in dispatch'] = dispatch/efficiency # need more in than out            
+            derived_time_dic[tech_name+' reverse in dispatch'] = dispatch_reverse/efficiency # need more in than out  
+            derived_time_dic[tech_name+' losses'] = (dispatch+dispatch_reverse)*(1./efficiency -1.0)
+                    
+
+    return derived_tech_dic,derived_time_dic
+    
 #%%
 # flatten dictionary of dictionaries to dictionary (1 level)
 def flatten_dic(dic_in):
