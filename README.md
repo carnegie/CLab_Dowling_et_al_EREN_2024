@@ -10,14 +10,14 @@ and fuels) without considering any spatial variation, policy, capacity markets, 
 
 Currently, the technologies considered in this release of MEM 2, and their associated keywords, are:
 
-    tech_keywords['demand'] = ['tech_name','tech_type','node_from','series_file']
+tech_keywords['demand'] = ['tech_name','tech_type','node_from','series_file','normalization']
     tech_keywords['curtailment'] = ['tech_name','tech_type','node_from','var_cost']
     tech_keywords['lost_load'] = ['tech_name','tech_type','node_to','var_cost']
-    tech_keywords['generator'] = ['tech_name','tech_type','node_to','series_file','fixed_cost','var_cost']
-    tech_keywords['fixed_generator'] = ['tech_name','tech_type','node_to','series_file','fixed_cost']
-    tech_keywords['transfer'] = ['tech_name','tech_type','node_to','node_from','fixed_cost','var_cost','efficiency']
-    tech_keywords['transmission'] = ['tech_name','tech_type','node_to','node_from','fixed_cost','var_cost','efficiency']
-    tech_keywords['storage'] = ['tech_name','tech_type','node_to','node_from','fixed_cost','var_cost','efficiency','charging_time','decay_rate']
+    tech_keywords['generator'] = ['tech_name','tech_type','node_to','series_file','fixed_cost','var_cost','normalization','capacity']
+    tech_keywords['fixed_generator'] = ['tech_name','tech_type','node_to','series_file','fixed_cost','normalization','capacity']
+    tech_keywords['transfer'] = ['tech_name','tech_type','node_to','node_from','fixed_cost','var_cost','efficiency','capacity']
+    tech_keywords['transmission'] = ['tech_name','tech_type','node_to','node_from','fixed_cost','var_cost','efficiency','capacity']
+    tech_keywords['storage'] = ['tech_name','tech_type','node_to','node_from','fixed_cost','var_cost','efficiency','charging_time','decay_rate','capacity']
 
 
 For a full list of input variables, it is best to look inside <Preprocess_Input.py>.
