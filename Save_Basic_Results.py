@@ -48,6 +48,10 @@ def save_basic_results(case_dic, tech_list, constraints,prob_dic,capacity_dic,di
     results_case_dic = {}        
     temp_dic = flatten_dic(meanify(prob_dic))
     for key in temp_dic:
+        # To avoid confusion, skip documenting the mean node_price (non-demand weighted).
+        # This value can easily be re-calculated from the saved time series outputs if needed.
+        if 'node_price' in key:
+            continue
         results_case_dic[key] = temp_dic[key]
    
     #--------------------------------------------------------------------------
