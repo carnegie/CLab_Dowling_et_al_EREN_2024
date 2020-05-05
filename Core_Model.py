@@ -196,7 +196,10 @@ def core_model(case_dic, tech_list):
             capacity_dic[tech_name] = capacity
             
             node_balance[node_to] += dispatch
-            fnc2min += capacity * tech_dic['fixed_cost'] * num_time_periods
+            if 'fixed_co2' in tech_dic:
+                fnc2min += capacity * tech_dic['fixed_cost'] * num_time_periods + capacity * tech_dic['fixed_co2'] * case_dic['co2_price']
+            else:
+                fnc2min += capacity * tech_dic['fixed_cost'] * num_time_periods
 
         #----------------------------------------------------------------------
         # curtailable generator
@@ -225,8 +228,15 @@ def core_model(case_dic, tech_list):
             dispatch_dic[tech_name] = dispatch
             
             node_balance[node_to] += dispatch
-            fnc2min +=  cvx.sum(dispatch * tech_dic['var_cost']) 
-            fnc2min += capacity * tech_dic['fixed_cost'] * num_time_periods
+            if 'var_co2' in tech_dic:
+                fnc2min +=  cvx.sum(dispatch * tech_dic['var_cost']) + cvx.sum(dispatch * case_dic['co2_price'] * tech_dic['var_co2']) 
+            else:
+                fnc2min +=  cvx.sum(dispatch * tech_dic['var_cost'])
+            
+            if 'fixed_co2' in tech_dic:
+                fnc2min += capacity * tech_dic['fixed_cost'] * num_time_periods + capacity * tech_dic['fixed_co2'] * case_dic['co2_price']
+            else:
+                fnc2min += capacity * tech_dic['fixed_cost'] * num_time_periods
         
         #----------------------------------------------------------------------
         # Storage
