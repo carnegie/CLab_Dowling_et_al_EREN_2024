@@ -53,8 +53,8 @@ def preprocess_input(case_input_path_filename):
     tech_keywords['generator'] = ['tech_name','tech_type','node_to','series_file','fixed_cost','var_cost','normalization','capacity','var_co2','fixed_co2']
     tech_keywords['fixed_generator'] = ['tech_name','tech_type','node_to','series_file','fixed_cost','normalization','capacity','fixed_co2']
     tech_keywords['transfer'] = ['tech_name','tech_type','node_to','node_from','fixed_cost','var_cost','efficiency','capacity']
-    tech_keywords['transmission'] = ['tech_name','tech_type','node_to','node_from','fixed_cost','var_cost','efficiency','capacity']
-    tech_keywords['storage'] = ['tech_name','tech_type','node_to','node_from','fixed_cost','var_cost','efficiency','charging_time','decay_rate','capacity']
+    tech_keywords['transmission'] = ['tech_name','tech_type','node_to','node_from','fixed_cost','var_cost','efficiency','capacity','fixed_co2']
+    tech_keywords['storage'] = ['tech_name','tech_type','node_to','node_from','fixed_cost','var_cost','efficiency','charging_time','decay_rate','capacity','fixed_co2']
     
     # Note <normalization>, if present and non-negative makes it so the series associated with the series file has a mean of <normalization>
                                               
