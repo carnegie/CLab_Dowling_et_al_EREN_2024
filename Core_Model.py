@@ -342,7 +342,11 @@ def core_model(case_dic, tech_list):
 
             if 'var_cost' in tech_dic:
                 fnc2min += cvx.sum(dispatch * tech_dic['var_cost'])
-            fnc2min += capacity * tech_dic['fixed_cost'] * num_time_periods
+            
+            if 'fixed_co2' in tech_dic:
+                fnc2min += capacity * tech_dic['fixed_cost'] * num_time_periods + capacity * tech_dic['fixed_co2'] * case_dic['co2_price']
+            else:
+                fnc2min += capacity * tech_dic['fixed_cost'] * num_time_periods            
         
         #----------------------------------------------------------------------
         # Bidirectional Transmission (directional)
