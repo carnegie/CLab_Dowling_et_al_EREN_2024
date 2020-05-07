@@ -117,6 +117,9 @@ def preprocess_input(case_input_path_filename):
     # Now each element of case_transpose is the potential keyword followed by data
     tech_list = []
     
+    # Check inputs for values associated with unused keywords
+    check_for_unused_values(tech_keywords, tech_data, tech_keys, idx_tech_type)
+
     # now add global variables to case_dic
     for data_row in tech_data[1::]:
         tech_dic = {}
@@ -267,3 +270,27 @@ def literal_to_boolean(text):
     else:
         answer = True # Missing value is taken to be true
     return answer
+
+
+# Print a warning if there is a non-zero value associated with
+# an unused keyword.
+def check_for_unused_values(tech_keywords, tech_data, tech_keys, idx_tech_type):
+
+    for data_row in tech_data[1::]:
+        
+        tech_type = data_row[idx_tech_type]
+
+        for tech_key, row_val in zip(tech_keys, data_row):
+            # Skip notes column always
+            if tech_key == 'notes':
+                continue
+
+            if tech_key not in tech_keywords[tech_type] and \
+                    row_val != '' and row_val != 0:
+
+                # Print in color
+                print(f"\033[0;33mWARNING: {data_row[0]} of tech type {tech_type}",
+                        f"has a value of {row_val} for {tech_key}. {tech_key} is not",
+                        f"a used parameter for {tech_type} and will be ignored.\033[0m")
+
+
