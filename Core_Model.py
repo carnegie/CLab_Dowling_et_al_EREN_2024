@@ -411,7 +411,16 @@ def core_model(case_dic, tech_list):
     fnc2min_scaled = case_dic['numerics_scaling']*fnc2min
     obj = cvx.Minimize(fnc2min_scaled)
     prob = cvx.Problem(obj, constraints)
-    prob.solve(solver = 'GUROBI')
+    prob.solve(solver = 'GUROBI', seed = 42) # Add a seed to get consistent results
+
+    print("Problem status: " + prob.status)
+
+    if prob.status != 'optimal':
+        print('Trying to solve again with numeric focus')
+        prob.solve(solver = 'GUROBI', seed = 42, NumericFocus=3)
+        print("New problem status: " + prob.status)
+        if prob.status != 'solved' and prob.status != 'optimal':
+            raise cvx.error.SolverError
 
 #    # problem is solved
 #    #======================================================================
