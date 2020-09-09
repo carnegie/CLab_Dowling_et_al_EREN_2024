@@ -121,7 +121,7 @@ def core_model(case_dic, tech_list):
 
         tech_name = tech_dic['tech_name']
         tech_type = tech_dic['tech_type']
-        
+
         # check the input node_to
         if 'node_to' in tech_dic:
             node_to = tech_dic['node_to']
@@ -188,6 +188,10 @@ def core_model(case_dic, tech_list):
                 capacity = cvx.Variable(1)
                 constraints += [ capacity >= 0 ]
                 constraint_list += [tech_name + ' capacity_ge_0']
+                if tech_dic.get('max_capacity',-1) > 0:
+                    max_capacity = tech_dic['max_capacity']
+                    constraints += [ capacity <= max_capacity ]
+                    constraint_list += [tech_name + ' capacity_le_max']
             if 'series' in tech_dic:
                 dispatch = capacity * tech_dic['series']
             else:
@@ -214,6 +218,10 @@ def core_model(case_dic, tech_list):
                 capacity = cvx.Variable(1)
                 constraints += [ capacity >= 0 ]
                 constraint_list += [tech_name + ' capacity_ge_0']
+                if tech_dic.get('max_capacity',-1) > 0:
+                    max_capacity = tech_dic['max_capacity']
+                    constraints += [ capacity <= max_capacity ]
+                    constraint_list += [tech_name + ' capacity_le_max']
             dispatch = cvx.Variable(num_time_periods) 
             constraints += [ dispatch >= 0 ]
             constraint_list += [tech_name + ' dispatch_ge_0']
@@ -253,6 +261,10 @@ def core_model(case_dic, tech_list):
                 capacity = cvx.Variable(1)
                 constraints += [ capacity >= 0 ]
                 constraint_list += [tech_name + ' capacity_ge_0']
+                if tech_dic.get('max_capacity',-1) > 0:
+                    max_capacity = tech_dic['max_capacity']
+                    constraints += [ capacity <= max_capacity ]
+                    constraint_list += [tech_name + ' capacity_le_max']
             dispatch_in = cvx.Variable(num_time_periods) 
             dispatch = cvx.Variable(num_time_periods)
             energy_stored = cvx.Variable(num_time_periods)
@@ -321,6 +333,10 @@ def core_model(case_dic, tech_list):
                 capacity = cvx.Variable(1)
                 constraints += [ capacity >= 0 ]
                 constraint_list += [tech_name + ' capacity_ge_0']
+                if tech_dic.get('max_capacity',-1) > 0:
+                    max_capacity = tech_dic['max_capacity']
+                    constraints += [ capacity <= max_capacity ]
+                    constraint_list += [tech_name + ' capacity_le_max']
             dispatch = cvx.Variable(num_time_periods)
             constraints += [ dispatch >= 0 ]
             constraint_list += [tech_name + ' dispatch_ge_0']
@@ -360,6 +376,10 @@ def core_model(case_dic, tech_list):
                 capacity = cvx.Variable(1)
                 constraints += [ capacity >= 0 ]
                 constraint_list += [tech_name + ' capacity_ge_0']
+                if tech_dic.get('max_capacity',-1) > 0:
+                    max_capacity = tech_dic['max_capacity']
+                    constraints += [ capacity <= max_capacity ]
+                    constraint_list += [tech_name + ' capacity_le_max']
             dispatch = cvx.Variable(num_time_periods)
             dispatch_reverse = cvx.Variable(num_time_periods)
             constraints += [ dispatch >= 0 ]
