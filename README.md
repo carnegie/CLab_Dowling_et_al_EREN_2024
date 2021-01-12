@@ -145,3 +145,13 @@ This command should automatically download / install the right packages needed f
 If you did not remove old Gurobi license and installed a new one, you might see error in this step. You need to delete the old Gurobi licencse and install the new one for your current Gurobi version
 
 11. Download and run python3 version of the Simple Energy Model -- SEM-1.2: https://github.com/ClabEnergyProject/SEM-1.2 -- Open case_input.xlsx in excel. Make the cases you want (by altering base case or ratios to base case), and then save sheet as case_input.csv. -- Open Spyder and then within Spyder navigate to the folder that was cloned from github and open and run Simple_Energy_Model.py
+
+
+<br>
+<b>=====  Linux INSTALLATION INSTRUCTIONS  ===== </b>
+<br>
+Tested on Linux Mint 20 Cinnamon, Cinnamon version 4.6.7, Linux Kernel 5.4.0-52-generic
+
+In addition to the MacOS instruction, you may need to add  xlsxwriter to your Conda environment
+
+> conda install -c anaconda xlsxwriter
