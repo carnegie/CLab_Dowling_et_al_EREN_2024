@@ -44,7 +44,8 @@ def preprocess_input(case_input_path_filename):
                     'year_end','month_end','day_end','hour_end']
     
     keywords_real = ['numerics_scaling','fixed_cost','var_cost','charging_time',
-                     'efficiency','decay_rate','normalization','capacity','co2_price','var_co2','fixed_co2','max_capacity']
+                     'efficiency','decay_rate','normalization','capacity','var_co2','fixed_co2','max_capacity',
+                     'co2_price', 'co2_constraint']
             
     tech_keywords = {}
     tech_keywords['demand'] = ['tech_name','tech_type','node_from','series_file','normalization']
@@ -55,6 +56,7 @@ def preprocess_input(case_input_path_filename):
     tech_keywords['transfer'] = ['tech_name','tech_type','node_to','node_from','fixed_cost','var_cost','efficiency','capacity','fixed_co2','max_capacity']
     tech_keywords['transmission'] = ['tech_name','tech_type','node_to','node_from','fixed_cost','var_cost','efficiency','capacity','fixed_co2','max_capacity']
     tech_keywords['storage'] = ['tech_name','tech_type','node_to','node_from','fixed_cost','var_cost','efficiency','charging_time','decay_rate','capacity','fixed_co2','max_capacity']
+    tech_keywords['shift_load'] = ['tech_name','tech_type','node_to','node_from','fixed_cost','var_cost','capacity','max_capacity']
     
     # Note <normalization>, if present and non-negative makes it so the series associated with the series file has a mean of <normalization>
                                               
@@ -292,5 +294,3 @@ def check_for_unused_values(tech_keywords, tech_data, tech_keys, idx_tech_type):
                 print(f"\033[0;33mWARNING: {data_row[0]} of tech type {tech_type}",
                         f"has a value of {row_val} for {tech_key}. {tech_key} is not",
                         f"a used parameter for {tech_type} and will be ignored.\033[0m")
-
-
