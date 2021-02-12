@@ -3,6 +3,9 @@
 #
 
 """
+Lei updated on Feb 11, 2021;
+To fix some issue with load_shift. 
+
 Lei updated on Feb 8, 2021;
 Add the ability of load shifting;
 Add CO2 constraint and total co2 emissions;
@@ -450,7 +453,7 @@ def core_model(case_dic, tech_list):
                 
             for i in range(num_time_periods):
 
-                constraints += [energy_stored[(i+1) % num_time_periods] == energy_stored[i] + dispatch[i]]
+                constraints += [energy_stored[(i+1) % num_time_periods] == energy_stored[i] + dispatch[i]*2]
                 constraint_list += [tech_name + ' storage_balance_step_'+str(i).zfill(5)]
                 
             capacity_dic[tech_name] = capacity
