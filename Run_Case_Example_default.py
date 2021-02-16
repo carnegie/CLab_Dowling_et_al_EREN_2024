@@ -20,6 +20,6 @@ case_dic,tech_list = preprocess_input(case_input_path_filename)
 if case_dic.get('co2_constraint',-1) >= 0:
     case_dic['co2_constraint'] = case_dic['co2_constraint']
 else:
-    case_dic['co2_constraint'] = 1e24
+    case_dic['co2_constraint'] = -1
 
 run_model_main_fun(case_dic, tech_list) 

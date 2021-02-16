@@ -110,6 +110,7 @@ def core_model(case_dic, tech_list):
     dispatch_dic = {} # dictionary of dispatch decision variables for inflow to tech
     stored_dic = {} # dictionary of storage amounts
     totCO2e = 0.0 # Lei added for CO2 constraint
+    flag_emissions = False
     
     num_time_periods = case_dic['num_time_periods']
                   
@@ -250,7 +251,8 @@ def core_model(case_dic, tech_list):
             node_balance[node_to] += dispatch
             if 'var_co2' in tech_dic:
                 fnc2min +=  cvx.sum(dispatch * tech_dic['var_cost']) + cvx.sum(dispatch * case_dic['co2_price'] * tech_dic['var_co2']) 
-                totCO2e += cvx.sum(dispatch * tech_dic['var_co2']) 
+                totCO2e += cvx.sum(dispatch * tech_dic['var_co2'])
+                if flag_emissions == False: flag_emissions = True 
             else:
                 fnc2min +=  cvx.sum(dispatch * tech_dic['var_cost'])
             
@@ -482,12 +484,11 @@ def core_model(case_dic, tech_list):
 
     #%%======================================================================
     # Lei added, co2 emission cap
-    if case_dic['co2_constraint'] >= 0:
+    if case_dic['co2_constraint'] >= 0 and flag_emissions == True:
         constraints += [ totCO2e <= case_dic['co2_constraint'] ]
-    else:
-        constraints += [ totCO2e <= 1e24 ]
-    constraint_list += [ 'co2_emissions_le_constraint' ] 
+        constraint_list += [ 'co2_emissions_le_constraint' ] 
     
+
     #%%======================================================================
     # Now add all of the node balances to the constraints
     
@@ -512,7 +513,11 @@ def core_model(case_dic, tech_list):
         if prob.status != 'solved' and prob.status != 'optimal':
             raise cvx.error.SolverError
 
-    dispatch_dic['co2_emissions'] = totCO2e.value # Lei added
+    # Lei added
+    if flag_emissions == True:
+        dispatch_dic['co2_emissions'] = totCO2e.value
+    else:
+        dispatch_dic['co2_emissions'] = totCO2e
 
 #    # problem is solved
 #    #======================================================================
