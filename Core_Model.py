@@ -164,12 +164,18 @@ def core_model(case_dic, tech_list):
         #----------------------------------------------------------------------
         # unmet demand 
         # (n_capacity = 0 and n_dispatch = 0 and n_dispatch = 1)
-        # Assumed to be unmet demand (lost load) with variable cost
+        # Assumed to be unmet demand (lost load) with variable cost.
+        # The mean quantity of lost_load can be specified with 'mean_dispatch'.
+        # In this regard: mean_dispatch = 1 - reliability.
         
         elif tech_type == 'lost_load':
             dispatch = cvx.Variable(num_time_periods) 
             constraints += [ dispatch >= 0 ]
             constraint_list += [tech_name + ' dispatch_ge_0']
+            if tech_dic.get('mean_dispatch',-1) >= 0:
+                constraints += [ cvx.sum(dispatch) / num_time_periods == tech_dic['mean_dispatch'] ]
+                constraint_list += [tech_name + ' mean_dispatch']
+
             dispatch_dic[tech_name] = dispatch
             node_balance[node_to] += dispatch # note that lost load is like a phantom source of pure variable capacity
             fnc2min +=  cvx.sum(dispatch * tech_dic['var_cost'])
