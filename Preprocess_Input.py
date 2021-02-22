@@ -45,12 +45,12 @@ def preprocess_input(case_input_path_filename):
     
     keywords_real = ['numerics_scaling','fixed_cost','var_cost','charging_time',
                      'efficiency','decay_rate','normalization','capacity','var_co2','fixed_co2','max_capacity',
-                     'co2_price', 'co2_constraint']
+                     'co2_price', 'co2_constraint', 'mean_dispatch']
             
     tech_keywords = {}
     tech_keywords['demand'] = ['tech_name','tech_type','node_from','series_file','normalization']
     tech_keywords['curtailment'] = ['tech_name','tech_type','node_from','var_cost']
-    tech_keywords['lost_load'] = ['tech_name','tech_type','node_to','var_cost']
+    tech_keywords['lost_load'] = ['tech_name','tech_type','node_to','var_cost','mean_dispatch']
     tech_keywords['generator'] = ['tech_name','tech_type','node_to','series_file','fixed_cost','var_cost','normalization','capacity','var_co2','fixed_co2','max_capacity']
     tech_keywords['fixed_generator'] = ['tech_name','tech_type','node_to','series_file','fixed_cost','normalization','capacity','fixed_co2','max_capacity']
     tech_keywords['transfer'] = ['tech_name','tech_type','node_to','node_from','fixed_cost','var_cost','efficiency','capacity','fixed_co2','max_capacity']

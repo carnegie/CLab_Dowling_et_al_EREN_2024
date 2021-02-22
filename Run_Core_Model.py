@@ -19,3 +19,4 @@ def run_model_main_fun(case_dic, tech_list):
     print ('Simple_Energy_Model: Saving basic results')
     [[input_case_dic,  input_tech_list,  input_time_dic],
      [results_case_dic,results_tech_dic,results_time_dic]] = save_basic_results(case_dic, tech_list, cvxpy_constraints,prob_dic,capacity_dic,dispatch_dic,stored_dic)
+    return results_case_dic, results_tech_dic, results_time_dic
