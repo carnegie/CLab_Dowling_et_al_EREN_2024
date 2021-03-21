@@ -41,7 +41,7 @@ def preprocess_input(case_input_path_filename):
                     'time_start','time_end','notes']
 
     keywords_int = ['year_start','month_start','day_start','hour_start',
-                    'year_end','month_end','day_end','hour_end']
+                    'year_end','month_end','day_end','hour_end', 'delta_t']
     
     keywords_real = ['numerics_scaling','fixed_cost','var_cost','charging_time',
                      'efficiency','decay_rate','normalization','capacity','var_co2','fixed_co2','max_capacity',
@@ -100,8 +100,13 @@ def preprocess_input(case_input_path_filename):
     if case_dic['verbose']:
         print ('    start time = ',start_time)
     
+    steps_per_day = 24
+    if 'delta_t' in case_dic:
+        steps_per_day = case_dic['delta_t']
+        assert(24%steps_per_day==0), "delta_t must be a divisor of 24, it is currently set to {steps_per_day}")
+        print(f"Adjusting 'num_time_periods' according to 'delta_t'. Steps_per_day = {steps_per_day}")
     num_time_periods = (
-            24 * (
+            steps_per_day * (
             datetime.date(case_dic['year_end'],case_dic['month_end'],case_dic['day_end'])-
             datetime.date(case_dic['year_start'],case_dic['month_start'],case_dic['day_start'])
             ).days +

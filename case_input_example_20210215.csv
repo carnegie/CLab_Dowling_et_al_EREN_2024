@@ -40,6 +40,7 @@ hour_end,24,,,,,,,,,,,,,,,
 numerics_scaling,1E+024,,,,,,,,,,,,,,,
 co2_price,0,,,,,,,,,,,,,,,
 co2_constraint,1E+024,,,,,,,,,,,,,,,
+delta_T,2,,,,,,,,,,,,,,,
 TECH_DATA,,,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,
 tech_name,tech_type,node_from,node_to,series_file,normalization,capacity,fixed_cost,var_cost,charging_time,efficiency,decay_rate,var_co2,fixed_co2,max_capacity,mean_dispatch,notes
