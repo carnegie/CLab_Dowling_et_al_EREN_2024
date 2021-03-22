@@ -100,19 +100,22 @@ def preprocess_input(case_input_path_filename):
     if case_dic['verbose']:
         print ('    start time = ',start_time)
     
-    steps_per_day = 24
+    delta_t = 1
     if 'delta_t' in case_dic:
-        steps_per_day = case_dic['delta_t']
-        assert(24%steps_per_day==0), "delta_t must be a divisor of 24, it is currently set to {steps_per_day}")
-        print(f"Adjusting 'num_time_periods' according to 'delta_t'. Steps_per_day = {steps_per_day}")
-    num_time_periods = (
-            steps_per_day * (
+        delta_t = case_dic['delta_t']
+        assert(24%delta_t==0), "delta_t must be a divisor of 24, it is currently set to {delta_t}"
+        print(f"    Adjusting 'num_time_periods' according to 'delta_t': {delta_t}")
+    num_time_periods = int( (
+            24 * (
             datetime.date(case_dic['year_end'],case_dic['month_end'],case_dic['day_end'])-
             datetime.date(case_dic['year_start'],case_dic['month_start'],case_dic['day_start'])
             ).days +
-            (case_dic['hour_end'] - case_dic['hour_start'] ) + 1
-            ) 
+            case_dic['hour_end'] - case_dic['hour_start'] + 1 )/delta_t
+            )
     case_dic['num_time_periods'] = num_time_periods
+    if 'delta_t' in case_dic:
+        print(f"    'num_time_periods' = {num_time_periods}")
+
     
     # -----------------------------------------------------------------------------
     # -----------------------------------------------------------------------------
