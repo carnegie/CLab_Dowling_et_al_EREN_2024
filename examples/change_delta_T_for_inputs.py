@@ -32,9 +32,9 @@ def change_resolution(f_name, new_resolution, header=1):
         exit()
 
     df[f'{cols[-1]} mod'] = df[cols[-1]].rolling(window=new_resolution).sum()
-    df[f'{cols[-1]} mod'] = df[f'{cols[-1]} mod']/float(new_resolution)
+    df[f'{cols[-1]}'] = df[f'{cols[-1]} mod']/float(new_resolution)
     df1 = df.loc[ df[hr_col]%new_resolution == 0 ]
-    df1 = df1.drop([cols[-1],], axis=1)
+    df1 = df1.drop([f'{cols[-1]} mod',], axis=1)
     new_f_name = f_name.replace('.csv', '_deltaT')+str(new_resolution)+'.csv'
     df1.to_csv(new_f_name, index=False)
     print(f"New file: {new_f_name}")
