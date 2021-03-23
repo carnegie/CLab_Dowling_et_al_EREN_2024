@@ -273,7 +273,8 @@ def core_model(case_dic, tech_list):
         # Assumed to be storage equivalent to a battery
         # Note variable cost, if present, is applied to output only
         # Optional variables: charging_time, efficiency, decay_rate
-        # Note: Charging time and decay rate is in units of number of time steps !!!
+        #     decay_rate is per hour and is adjusted based on delta_t
+        # Note: Charging time is in units of number of time steps !!!
         
         elif tech_type == 'storage':
             if tech_dic.get('capacity',-1) >= 0:
@@ -297,13 +298,17 @@ def core_model(case_dic, tech_list):
             constraint_list += [tech_name + ' energy_stored_ge_0']
             constraints += [ energy_stored <= capacity ]
             constraint_list += [tech_name + ' energy_stored_le_capacity']
+            if 'delta_t' in case_dic:
+                delta_t = case_dic['delta_t']
+            else:
+                delta_t = 1 # 1 hr
             if 'charging_time' in tech_dic:
                 constraints += [ dispatch_in  <= capacity / tech_dic['charging_time'] ]
                 constraint_list += [tech_name + ' dispatch_in_le_charging_rate']
                 constraints += [ dispatch <= capacity / tech_dic['charging_time'] ]
                 constraint_list += [tech_name + ' dispatch_le_discharge_rate']
             if 'decay_rate' in tech_dic:
-                decay_rate = tech_dic['decay_rate']
+                decay_rate = tech_dic['decay_rate'] * delta_t # Assume linear behavior within a time step
             else:
                 decay_rate = 0
                 if verbose:
