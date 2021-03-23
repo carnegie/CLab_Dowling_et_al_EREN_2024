@@ -308,7 +308,7 @@ def core_model(case_dic, tech_list):
                 constraints += [ dispatch <= capacity / tech_dic['charging_time'] ]
                 constraint_list += [tech_name + ' dispatch_le_discharge_rate']
             if 'decay_rate' in tech_dic:
-                decay_rate = tech_dic['decay_rate'] * delta_t # Assume linear behavior within a time step
+                decay_rate = tech_dic['decay_rate'] # per hour
             else:
                 decay_rate = 0
                 if verbose:
@@ -322,10 +322,12 @@ def core_model(case_dic, tech_list):
                 
             for i in range(num_time_periods):
 
-                constraints += [
+                # energy_stored needs delta_t. We price capacity with respect to energy stored.
+                # Assume linear behavior within a time step for decay_rate.
+                constraints += [ 
                     energy_stored[(i+1) % num_time_periods] ==
-                        energy_stored[i] + efficiency * dispatch_in[i]
-                        - dispatch[i] - energy_stored[i]*decay_rate
+                        energy_stored[i] + delta_t * (efficiency * dispatch_in[i]
+                        - dispatch[i] - energy_stored[i]*decay_rate)
                         ]
                 constraint_list += [tech_name + ' storage_balance_step_'+str(i).zfill(5)]
                         
