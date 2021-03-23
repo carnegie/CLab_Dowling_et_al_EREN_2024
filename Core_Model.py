@@ -322,7 +322,7 @@ def core_model(case_dic, tech_list):
                 
             for i in range(num_time_periods):
 
-                # energy_stored needs delta_t. We price capacity with respect to energy stored.
+                # energy_stored needs delta_t. Storage capacity costs are with respect to energy stored.
                 # Assume linear behavior within a time step for decay_rate.
                 constraints += [ 
                     energy_stored[(i+1) % num_time_periods] ==
