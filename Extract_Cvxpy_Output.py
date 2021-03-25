@@ -61,14 +61,14 @@ def extract_cvxpy_output(case_dic,tech_list,constraint_list,
     prob = {}
     prob['status'] = cvxpy_prob.status
     prob['value'] = cvxpy_prob.value / numerics_scaling
-    prob['system_cost'] = prob['value']/num_time_periods/delta_t
+    prob['system_cost'] = prob['value'] / num_time_periods / delta_t
     prob['co2_emissions'] = cvxpy_dispatch_dic['co2_emissions']
     
     # get electricity price at each node by taking dual value of node balance equation
     node_price = {}
     for node in node_list:
         idx = constraint_list.index(node + ' balance')
-        node_price[node] = -cvxpy_prob.constraints[idx].dual_value / numerics_scaling
+        node_price[node] = -cvxpy_prob.constraints[idx].dual_value / numerics_scaling / delta_t
     prob['node_price'] = node_price
     
     return prob,capacity_dic,dispatch_dic,stored_dic
