@@ -32,6 +32,7 @@ def change_resolution(f_name, new_resolution, header=1):
         exit()
 
     df[f'{cols[-1]} mod'] = df[cols[-1]].rolling(window=new_resolution).sum()
+    df[f'{cols[-1]} mod'] = df[f'{cols[-1]} mod'].fillna(0)
     df[f'{cols[-1]}'] = df[f'{cols[-1]} mod']/float(new_resolution)
     df1 = df.loc[ df[hr_col]%new_resolution == 0 ]
     df1 = df1.drop([f'{cols[-1]} mod',], axis=1)
