@@ -128,6 +128,15 @@ def core_model(case_dic, tech_list):
         'transfer' (unidirectional) or 'transmission' (bidirectional)
 
     """
+
+    # delta_t for the case is applied to all fixed and variable 
+    # costs, which are in units of $/kW/h and $/kWh/h and need 
+    # to reflect changes in model time resolution.
+    # delta_t is also used in the storage section.
+    if 'delta_t' in case_dic:
+        delta_t = case_dic['delta_t']
+    else:
+        delta_t = 1 # 1 hr
   
     #loop through dics in tech_list
     for tech_dic in tech_list:
@@ -178,7 +187,7 @@ def core_model(case_dic, tech_list):
 
             dispatch_dic[tech_name] = dispatch
             node_balance[node_to] += dispatch # note that lost load is like a phantom source of pure variable capacity
-            fnc2min +=  cvx.sum(dispatch * tech_dic['var_cost'])
+            fnc2min +=  cvx.sum(dispatch * tech_dic['var_cost'] * delta_t)
 
         #----------------------------------------------------------------------
         # generic curtailment
@@ -192,7 +201,7 @@ def core_model(case_dic, tech_list):
             dispatch_dic[tech_name] = dispatch
             node_balance[node_from] += - dispatch
             if 'var_cost' in tech_dic: # if cost of curtailment
-                fnc2min +=  cvx.sum(dispatch * tech_dic['var_cost'])
+                fnc2min +=  cvx.sum(dispatch * tech_dic['var_cost'] * delta_t)
                 
         #----------------------------------------------------------------------
         # non-curtailable generator 
@@ -220,9 +229,9 @@ def core_model(case_dic, tech_list):
             
             node_balance[node_to] += dispatch
             if 'fixed_co2' in tech_dic:
-                fnc2min += capacity * tech_dic['fixed_cost'] * num_time_periods + capacity * tech_dic['fixed_co2'] * case_dic['co2_price']
+                fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods + capacity * tech_dic['fixed_co2'] * delta_t * case_dic['co2_price']
             else:
-                fnc2min += capacity * tech_dic['fixed_cost'] * num_time_periods
+                fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods
 
         #----------------------------------------------------------------------
         # curtailable generator
@@ -256,16 +265,16 @@ def core_model(case_dic, tech_list):
             
             node_balance[node_to] += dispatch
             if 'var_co2' in tech_dic:
-                fnc2min +=  cvx.sum(dispatch * tech_dic['var_cost']) + cvx.sum(dispatch * case_dic['co2_price'] * tech_dic['var_co2']) 
-                totCO2e += cvx.sum(dispatch * tech_dic['var_co2'])
+                fnc2min +=  cvx.sum(dispatch * tech_dic['var_cost'] * delta_t) + cvx.sum(dispatch * case_dic['co2_price'] * delta_t * tech_dic['var_co2']) 
+                totCO2e += cvx.sum(dispatch * tech_dic['var_co2'] * delta_t)
                 if flag_emissions == False: flag_emissions = True 
             else:
-                fnc2min +=  cvx.sum(dispatch * tech_dic['var_cost'])
+                fnc2min +=  cvx.sum(dispatch * tech_dic['var_cost'] * delta_t)
             
             if 'fixed_co2' in tech_dic:
-                fnc2min += capacity * tech_dic['fixed_cost'] * num_time_periods + capacity * tech_dic['fixed_co2'] * case_dic['co2_price']
+                fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods + capacity * tech_dic['fixed_co2'] * delta_t * case_dic['co2_price']
             else:
-                fnc2min += capacity * tech_dic['fixed_cost'] * num_time_periods
+                fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods
         
         #----------------------------------------------------------------------
         # Storage
@@ -298,10 +307,6 @@ def core_model(case_dic, tech_list):
             constraint_list += [tech_name + ' energy_stored_ge_0']
             constraints += [ energy_stored <= capacity ]
             constraint_list += [tech_name + ' energy_stored_le_capacity']
-            if 'delta_t' in case_dic:
-                delta_t = case_dic['delta_t']
-            else:
-                delta_t = 1 # 1 hr
             if 'charging_time' in tech_dic:
                 constraints += [ dispatch_in  <= capacity / (tech_dic['charging_time'] / delta_t) ]
                 constraint_list += [tech_name + ' dispatch_in_le_charging_rate']
@@ -342,12 +347,12 @@ def core_model(case_dic, tech_list):
             else:
                 node_balance[node_to ] += -dispatch_in
             if 'var_cost' in tech_dic:
-                fnc2min += cvx.sum(dispatch_in * tech_dic['var_cost'])  
+                fnc2min += cvx.sum(dispatch_in * tech_dic['var_cost'] * delta_t)  
                 
             if 'fixed_co2' in tech_dic:
-                fnc2min += capacity * tech_dic['fixed_cost'] * num_time_periods + capacity * tech_dic['fixed_co2'] * case_dic['co2_price']
+                fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods + capacity * tech_dic['fixed_co2'] * delta_t * case_dic['co2_price']
             else:
-                fnc2min += capacity * tech_dic['fixed_cost'] * num_time_periods                
+                fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods                
         
         #----------------------------------------------------------------------
         # Transmission  or concerion (directional)
@@ -385,12 +390,12 @@ def core_model(case_dic, tech_list):
             node_balance[node_from] += - dispatch/efficiency # need more in than out            
 
             if 'var_cost' in tech_dic:
-                fnc2min += cvx.sum(dispatch * tech_dic['var_cost'])
+                fnc2min += cvx.sum(dispatch * tech_dic['var_cost'] * delta_t)
             
             if 'fixed_co2' in tech_dic:
-                fnc2min += capacity * tech_dic['fixed_cost'] * num_time_periods + capacity * tech_dic['fixed_co2'] * case_dic['co2_price']
+                fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods + capacity * tech_dic['fixed_co2'] * delta_t * case_dic['co2_price']
             else:
-                fnc2min += capacity * tech_dic['fixed_cost'] * num_time_periods            
+                fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods            
         
         #----------------------------------------------------------------------
         # Bidirectional Transmission (directional)
@@ -436,13 +441,13 @@ def core_model(case_dic, tech_list):
             node_balance[node_to] += -dispatch_reverse/efficiency # need more in than out            
                     
             if 'var_cost' in tech_dic:
-                fnc2min += cvx.sum(dispatch * tech_dic['var_cost'])
-                fnc2min += cvx.sum(dispatch_reverse * tech_dic['var_cost'])
+                fnc2min += cvx.sum(dispatch * tech_dic['var_cost'] * delta_t)
+                fnc2min += cvx.sum(dispatch_reverse * tech_dic['var_cost'] * delta_t)
                 
             if 'fixed_co2' in tech_dic:
-                fnc2min += capacity * tech_dic['fixed_cost'] * num_time_periods + capacity * tech_dic['fixed_co2'] * case_dic['co2_price']
+                fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods + capacity * tech_dic['fixed_co2'] * delta_t * case_dic['co2_price']
             else:
-                fnc2min += capacity * tech_dic['fixed_cost'] * num_time_periods  
+                fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods  
 
 
         
@@ -485,10 +490,10 @@ def core_model(case_dic, tech_list):
             node_balance[node_from] += -dispatch
 
             if 'var_cost' in tech_dic:
-                fnc2min += cvx.sum(cvx.abs(energy_shifted) * tech_dic['var_cost'])
+                fnc2min += cvx.sum(cvx.abs(energy_shifted) * tech_dic['var_cost'] * delta_t)
             
             if 'fixed_co2' in tech_dic:
-                fnc2min += capacity * tech_dic['fixed_cost'] * num_time_periods   
+                fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods   
 
 
                 

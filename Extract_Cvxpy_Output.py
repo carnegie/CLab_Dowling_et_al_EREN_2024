@@ -54,10 +54,14 @@ def extract_cvxpy_output(case_dic,tech_list,constraint_list,
         if type(val) ==  cvxpy.expressions.variable.Variable:
             stored_dic[item+' stored'] = cvxpy_stored_dic[item].value
     
+    if 'delta_t' in case_dic:
+        delta_t = case_dic['delta_t']
+    else:
+        delta_t = 1 # 1 hr
     prob = {}
     prob['status'] = cvxpy_prob.status
     prob['value'] = cvxpy_prob.value / numerics_scaling
-    prob['system_cost'] = prob['value']/num_time_periods
+    prob['system_cost'] = prob['value']/num_time_periods/delta_t
     prob['co2_emissions'] = cvxpy_dispatch_dic['co2_emissions']
     
     # get electricity price at each node by taking dual value of node balance equation
