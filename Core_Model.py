@@ -229,7 +229,7 @@ def core_model(case_dic, tech_list):
             
             node_balance[node_to] += dispatch
             if 'fixed_co2' in tech_dic:
-                fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods + capacity * tech_dic['fixed_co2'] * delta_t * case_dic['co2_price']
+                fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods + capacity * tech_dic['fixed_co2'] * delta_t * case_dic['co2_price'] * num_time_periods
             else:
                 fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods
 
@@ -272,7 +272,7 @@ def core_model(case_dic, tech_list):
                 fnc2min +=  cvx.sum(dispatch * tech_dic['var_cost'] * delta_t)
             
             if 'fixed_co2' in tech_dic:
-                fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods + capacity * tech_dic['fixed_co2'] * delta_t * case_dic['co2_price']
+                fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods + capacity * tech_dic['fixed_co2'] * delta_t * case_dic['co2_price'] * num_time_periods
             else:
                 fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods
         
@@ -350,7 +350,7 @@ def core_model(case_dic, tech_list):
                 fnc2min += cvx.sum(dispatch_in * tech_dic['var_cost'] * delta_t)  
                 
             if 'fixed_co2' in tech_dic:
-                fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods + capacity * tech_dic['fixed_co2'] * delta_t * case_dic['co2_price']
+                fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods + capacity * tech_dic['fixed_co2'] * delta_t * case_dic['co2_price'] * num_time_periods
             else:
                 fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods                
         
@@ -393,7 +393,7 @@ def core_model(case_dic, tech_list):
                 fnc2min += cvx.sum(dispatch * tech_dic['var_cost'] * delta_t)
             
             if 'fixed_co2' in tech_dic:
-                fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods + capacity * tech_dic['fixed_co2'] * delta_t * case_dic['co2_price']
+                fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods + capacity * tech_dic['fixed_co2'] * delta_t * case_dic['co2_price'] * num_time_periods
             else:
                 fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods            
         
@@ -445,7 +445,7 @@ def core_model(case_dic, tech_list):
                 fnc2min += cvx.sum(dispatch_reverse * tech_dic['var_cost'] * delta_t)
                 
             if 'fixed_co2' in tech_dic:
-                fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods + capacity * tech_dic['fixed_co2'] * delta_t * case_dic['co2_price']
+                fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods + capacity * tech_dic['fixed_co2'] * delta_t * case_dic['co2_price'] * num_time_periods
             else:
                 fnc2min += capacity * tech_dic['fixed_cost'] * delta_t * num_time_periods  
 
