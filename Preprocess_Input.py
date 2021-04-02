@@ -41,7 +41,7 @@ def preprocess_input(case_input_path_filename):
                     'time_start','time_end','notes']
 
     keywords_int = ['year_start','month_start','day_start','hour_start',
-                    'year_end','month_end','day_end','hour_end']
+                    'year_end','month_end','day_end','hour_end', 'delta_t']
     
     keywords_real = ['numerics_scaling','fixed_cost','var_cost','charging_time',
                      'efficiency','decay_rate','normalization','capacity','var_co2','fixed_co2','max_capacity',
@@ -100,14 +100,22 @@ def preprocess_input(case_input_path_filename):
     if case_dic['verbose']:
         print ('    start time = ',start_time)
     
-    num_time_periods = (
+    delta_t = 1
+    if 'delta_t' in case_dic:
+        delta_t = case_dic['delta_t']
+        assert(24%delta_t==0), "delta_t must be a divisor of 24, it is currently set to {delta_t}"
+        print(f"    Adjusting 'num_time_periods' according to 'delta_t': {delta_t}")
+    num_time_periods = int( (
             24 * (
             datetime.date(case_dic['year_end'],case_dic['month_end'],case_dic['day_end'])-
             datetime.date(case_dic['year_start'],case_dic['month_start'],case_dic['day_start'])
             ).days +
-            (case_dic['hour_end'] - case_dic['hour_start'] ) + 1
-            ) 
+            case_dic['hour_end'] - case_dic['hour_start'] + 1 )/delta_t
+            )
     case_dic['num_time_periods'] = num_time_periods
+    if 'delta_t' in case_dic:
+        print(f"    'num_time_periods' = {num_time_periods}")
+
     
     # -----------------------------------------------------------------------------
     # -----------------------------------------------------------------------------
