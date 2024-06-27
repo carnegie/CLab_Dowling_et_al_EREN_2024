@@ -109,26 +109,26 @@ Check the installation with
 <br>
 The following is installation instructions for MacOS 10.13 machines.
 
-1. If you installed Anaconda2 before, use remove programs to remove Anaconda2. You don't need to remove default python2 which might cause unexpected error 
+1. If you installed Anaconda2 before, use remove programs to remove Anaconda2. You don't need to remove default python2 which might cause unexpected error
 
-2. Use remove programs to remove all Gurobi. Also, delete Gurobi license (normally under "/Users/$username/" if you didn't specify any location when installing) 
+2. Use remove programs to remove all Gurobi. Also, delete Gurobi license (normally under "/Users/$username/" if you didn't specify any location when installing)
 
-3. Install Anaconda3 for MacOS. https://www.anaconda.com/download/ 
+3. Install Anaconda3 for MacOS. https://www.anaconda.com/download/
 
-4. Download and install Gurobi. http://www.gurobi.com/downloads/download-center  http://www.gurobi.com/downloads/gurobi-optimizer 
+4. Download and install Gurobi. http://www.gurobi.com/downloads/download-center  http://www.gurobi.com/downloads/gurobi-optimizer
 
-5. Activate Gurobi license. You have to go to this page https://user.gurobi.com/download/licenses/current to see what licenses are allocated to you. Click on the license that will pertain to your machine. A window will open up that will have some text like:  
+5. Activate Gurobi license. You have to go to this page https://user.gurobi.com/download/licenses/current to see what licenses are allocated to you. Click on the license that will pertain to your machine. A window will open up that will have some text like: 
 
 	grbgetkey 2c8c6fa0-ad45-11e8-a2c6-0acd5117eeae
 
 6. Copy that text and paste it in an Anaconda terminal window. (You might start these Anaconda windows as Administrator just to be on the safe side.)
 
-7. Set up python link to Gurobi. Open up the Anaconda3 terminal window as Administrator from the start menu. And then type: 
+7. Set up python link to Gurobi. Open up the Anaconda3 terminal window as Administrator from the start menu. And then type:
 
 	> conda config --add channels http://conda.anaconda.org/gurobi	
 	> conda install gurobi
 
-8. Install cvxpy. For python3, cvxpy must be installed with pip. Open up an Anaconda window (I did it as Administrator) and type  
+8. Install cvxpy. For python3, cvxpy must be installed with pip. Open up an Anaconda window (I did it as Administrator) and type 
 
 	> pip install cvxpy 
 
