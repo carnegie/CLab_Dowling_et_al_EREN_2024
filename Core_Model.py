@@ -110,7 +110,7 @@ def core_model(case_dic, tech_list):
     dispatch_dic = {} # dictionary of dispatch decision variables for inflow to tech
     stored_dic = {} # dictionary of storage amounts
     totCO2e = 0.0 # Lei added for CO2 constraint
-    flag_emissions = False
+    flag_emissions = False #jackie changed from false to true
     
     num_time_periods = case_dic['num_time_periods']
                   

@@ -18,8 +18,13 @@ print ('Macro_Energy_Model: Pre-processing input')
 case_dic,tech_list = preprocess_input(case_input_path_filename)
 
 if case_dic.get('co2_constraint',-1) >= 0:
+    
+    print("before case_dic['co2_constraint']", case_dic['co2_constraint'])
+    case_dic['co2_constraint'] = 201.918
     case_dic['co2_constraint'] = case_dic['co2_constraint']
+    print("after case_dic['co2_constraint']", case_dic['co2_constraint'])
+    
 else:
     case_dic['co2_constraint'] = -1
 
-run_model_main_fun(case_dic, tech_list) 
+run_model_main_fun(case_dic, tech_list)

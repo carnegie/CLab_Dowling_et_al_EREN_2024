@@ -117,7 +117,9 @@ def save_basic_results(case_dic, tech_list, constraints,prob_dic,capacity_dic,di
     
     output_path = case_dic['output_path']
     case_name = case_dic['case_name']
-    output_folder = output_path + "/" + case_name
+    output_folder = output_path
+# Jackie changed this line to make all the output folders go into one folder
+#    output_folder = output_path + "/" + case_name
     today = datetime.datetime.now()
     todayString = str(today.year) + str(today.month).zfill(2) + str(today.day).zfill(2) + '-' + \
         str(today.hour).zfill(2) + str(today.minute).zfill(2) + str(today.second).zfill(2)

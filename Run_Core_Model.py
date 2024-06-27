@@ -10,7 +10,8 @@ from Save_Basic_Results import save_basic_results
 import os
 
 def run_model_main_fun(case_dic, tech_list):
-    output_folder = case_dic['output_path'] + '/' + case_dic['case_name']
+    output_folder = case_dic['output_path']
+#    output_folder = case_dic['output_path'] + '/' + case_dic['case_name']
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
     print ('Macro_Energy_Model: Executing core model')
