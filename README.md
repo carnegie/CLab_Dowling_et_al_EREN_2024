@@ -4,6 +4,7 @@
 #
 # Ken Caldeira <kcaldeira@carnegiescience.edu>
 
+https://github.com/carnegie/MEM_public
 
 Python 3.7 (or 3.6!) and cvxpy 1.x version of MEM 2. This is a Simple Energy Model that optimizes electricity (or electricity
 and fuels) without considering any spatial variation, policy, capacity markets, etc.
