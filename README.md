@@ -28,29 +28,6 @@ Currently, the technologies considered in this release of MEM 2, and their assoc
 For a full list of input variables, it is best to look inside <Preprocess_Input.py>.
 
 <br>
-<b>=====  WISH LIST OF THINGS TO BE DONE ON THIS MODEL  =====</b>
-<br>
-
-The following is a wish list for improvements to our model and its usability:
-
--- Plot output
-
--- Produce summary text files of output
-
--- Consider adding PGP etc as a core technology
-
--- Some LIFO storage and PGP_storage analysis and figures as part of standard output.
-
--- Automate some checks on aberrant usage of storage (?)
-
--- Automate test cases and comparison with output files.
-
--- Add inter-case comparisons to uput
-
--- Make version that can be spread across multi-node clusters.
-
-
-<br>
 <b>=====  WINDOWS 10 INSTALLATION INSTRUCTIONS  ===== </b>
 <br>
 The following is installation instructions for Windows 10 machines.
