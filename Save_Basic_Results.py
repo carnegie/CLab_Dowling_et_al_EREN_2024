@@ -143,7 +143,8 @@ def save_basic_results(case_dic, tech_list, constraints,prob_dic,capacity_dic,di
     results_case_df.to_excel(writer, sheet_name = 'case results')
     results_tech_df.to_excel(writer, sheet_name = 'tech results')
     results_time_df.to_excel(writer, sheet_name = 'time results') 
-    writer.save()
+    # writer.save()
+    writer.close()
          
     if verbose: 
         print ( 'Excel file written: ' + output_file_path_name + '.xlsx' )

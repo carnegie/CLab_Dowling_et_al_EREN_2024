@@ -40,7 +40,8 @@ def extract_cvxpy_output(case_dic,tech_list,constraint_list,
     for item in cvxpy_capacity_dic:
         val = cvxpy_capacity_dic[item]
         if type(val) ==  cvxpy.expressions.variable.Variable:
-            capacity_dic[item] = np.asscalar(cvxpy_capacity_dic[item].value)
+            # capacity_dic[item] = np.asscalar(cvxpy_capacity_dic[item].value)
+            capacity_dic[item] = cvxpy_capacity_dic[item].value
         else:
             capacity_dic[item] = val
        

@@ -199,7 +199,8 @@ def core_model(case_dic, tech_list):
             constraints += [ dispatch >= 0 ]
             constraint_list += [tech_name + ' dispatch_ge_0']
             dispatch_dic[tech_name] = dispatch
-            node_balance[node_from] += - dispatch
+            # node_balance[node_from] += - dispatch
+            node_balance[node_from] = node_balance[node_from] - dispatch
             if 'var_cost' in tech_dic: # if cost of curtailment
                 fnc2min +=  cvx.sum(dispatch * tech_dic['var_cost'] * delta_t)
                 
@@ -386,8 +387,10 @@ def core_model(case_dic, tech_list):
                 if verbose:
                     print('Warning: No efficiency specified for ', tech_name,'. We assume an efficiency of 1.', sep = '')
 
-            node_balance[node_to] += dispatch
-            node_balance[node_from] += - dispatch/efficiency # need more in than out            
+            # node_balance[node_to] += dispatch
+            node_balance[node_to] = node_balance[node_to] + dispatch
+            # node_balance[node_from] += - dispatch/efficiency # need more in than out 
+            node_balance[node_from] = node_balance[node_from] - dispatch/efficiency # need more in than out           
 
             if 'var_cost' in tech_dic:
                 fnc2min += cvx.sum(dispatch * tech_dic['var_cost'] * delta_t)
